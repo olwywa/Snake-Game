@@ -6,10 +6,12 @@ class Board
 private:
 	int boardSize = 0;
 	bool isGoodMove = false;
-	std::vector <std::vector<Tile*>> board;
+	bool isGameOver = false;
 	Snake* snake = new Snake();
 
 public:
+	std::vector <std::vector<Tile*>> board;
+
 	// constructor
 	Board();
 	// destructor
@@ -34,5 +36,7 @@ public:
 	bool Move(char move);
 
 	void PrintBoard();
+
+	bool GetGameState();
 };
 

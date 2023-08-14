@@ -9,18 +9,18 @@ Board::Board()
 
 	if (correctSize)
 	{
-		for (int wiersz = 0; wiersz < this->boardSize; wiersz++)			// generate empty board to initialize it later
+		for (int row = 0; row < this->boardSize; row++)			// generate empty board to initialize it later
 		{
 			std::vector<Tile*> vecTiles;
 
-			for (int kolumna = 0; kolumna < this->boardSize; kolumna++)
+			for (int col = 0; col < this->boardSize; col++)
 			{
-				if (wiersz == 0 || wiersz == this->boardSize - 1)			// write wall
+				if (row == 0 || row == this->boardSize - 1)			// write wall
 				{
 					Tile* singleTile = new Tile(2);
 					vecTiles.push_back(singleTile);
 				}
-				else if (kolumna == 0 || kolumna == this->boardSize - 1)	// write wall
+				else if (col == 0 || col == this->boardSize - 1)	// write wall
 				{
 					Tile* singleTile = new Tile(2);
 					vecTiles.push_back(singleTile);
@@ -164,6 +164,7 @@ bool Board::Move(char move)
 				if (result.first == false)				// check if move is possible
 				{
 					this->isGoodMove = false;
+					this->isGameOver = true;
 					break;
 				}
 				else									// check is Snake ate food
@@ -196,6 +197,7 @@ bool Board::Move(char move)
 				if (result.first == false)				// check if move is possible
 				{
 					this->isGoodMove = false;
+					this->isGameOver = true;
 					break;
 				}
 				else									// check is Snake ate food
@@ -228,6 +230,7 @@ bool Board::Move(char move)
 				if (result.first == false)				// check if move is possible
 				{
 					this->isGoodMove = false;
+					this->isGameOver = true;
 					break;
 				}
 				else									// check is Snake ate food
@@ -260,6 +263,7 @@ bool Board::Move(char move)
 				if (result.first == false)				// check if move is possible
 				{
 					this->isGoodMove = false;
+					this->isGameOver = true;
 					break;
 				}
 				else									// check is Snake ate food
@@ -349,7 +353,12 @@ void Board::PrintBoard()
 	}
 }
 
+bool Board::GetGameState()
+{
+	return this->isGameOver;
+}
+
 Board::~Board() 
 {
-	delete this->snake;
+	//delete this->snake;
 }

@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../../snake/snake/Board.h"
+#include "../snake/Board.h"
 
 class test_BoardClass : public ::testing::Test
 {
@@ -44,25 +44,25 @@ TEST_F(test_BoardClass, createCorrectBoard)
     std::vector<std::vector<char>> expectedBoard = {};
 	int boardSize = 10;
 
-	for (int wiersz = 0; wiersz < boardSize; wiersz++)
+	for (int row = 0; row < this->bb.GetBoardSize(); row++)
 	{
 		std::vector<char> vecTiles;
 
-		for (int kolumna = 0; kolumna < boardSize; kolumna++)
+		for (int col = 0; col < this->bb.GetBoardSize(); col++)
 		{
 			// write wall
-			if (wiersz == 0 || wiersz == boardSize - 1)
+			if (row == 0 || row == boardSize - 1)
 			{
 				vecTiles.push_back('X');
 			}
 			// write wall
-			else if (kolumna == 0 || kolumna == boardSize - 1)
+			else if (col == 0 || col == boardSize - 1)
 			{
 				vecTiles.push_back('X');
 			}
 			// write snake with starting position
-			else if ((wiersz == snake->GetStartingSnakeXPos())
-				&& (kolumna == snake->GetStartingSnakeYPos()))
+			else if ((row == snake->GetStartingSnakePos().first)
+				&& (col == snake->GetStartingSnakePos().second))
 			{
 				vecTiles.push_back('S');
 			}
@@ -79,12 +79,12 @@ TEST_F(test_BoardClass, createCorrectBoard)
 	//change the underlying buffer and save the old buffer
 	auto old_buf2 = std::cout.rdbuf(buffer2.rdbuf());
 
-	for (int wiersz = 0; wiersz < boardSize; wiersz++)
+	for (int row = 0; row < this->bb.GetBoardSize(); row++)
 	{
-		for (int kolumna = 0; kolumna < boardSize; kolumna++)
+		for (int col = 0; col < this->bb.GetBoardSize(); col++)
 		{
-			std::cout << expectedBoard[wiersz][kolumna];
-			if (kolumna == boardSize - 1)
+			std::cout << expectedBoard[row][col];
+			if (col == boardSize - 1)
 			{
 				std::cout << "\n";
 			}
@@ -100,7 +100,7 @@ TEST_F(test_BoardClass, createCorrectBoard)
 
 TEST_F(test_BoardClass, test_Move)
 {
-    bb.IsCorrectMove('W');
+    bb.IsCorrectKeyMove('W');
     auto output = bb.board[4][5]->GetRole();
     ASSERT_EQ(1, output);
 }

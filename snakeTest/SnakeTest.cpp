@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../../snake/snake/Snake.h"
+#include "../snake/Snake.h"
 
 class test_SnakeClass : public ::testing::Test 
 {

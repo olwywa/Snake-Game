@@ -1,6 +1,10 @@
 #include <windows.h>
 #include <conio.h>
 #include "Board.h"
+#include <chrono>
+#include <thread> 
+#include <errno.h>
+
 
 int main()
 {
@@ -11,34 +15,37 @@ int main()
 	std::string instructions = "To move snake, use buttons W = UP, D = RIGHT, S = DOWN or A = LEFT. \nUse Q to quit the game.\n\n";
 	std::cout << instructions;
 
-	Board* newBoard = new Board();
+	Board* newBoard = new Board();	
 
-	while (move != 'q')
+	while (!newBoard->GetGameState())
 	{
-		move = _getch();
-		system("cls");
-
-		bool goodMove = newBoard->IsCorrectKeyMove(move);
-
-		if (goodMove)
+		while (!_kbhit())
 		{
-			std::cout << instructions;
-			bool isSuccessMove = newBoard->Move(move);
-			if (isSuccessMove)
-				newBoard->PrintBoard();
+			system("cls");
+			bool goodMove = newBoard->IsCorrectKeyMove(move);
 
-			std::cout << "\nSnake Counter: " << newBoard->GetSnakeLengthCounter() << std::endl;
-
-			if (isSuccessMove == false)
+			if (goodMove)
 			{
-				std::cout << "\nGAME OVER " << std::endl;
-				break;
+				std::cout << instructions;
+				bool isSuccessMove = newBoard->Move(move);
+				if (isSuccessMove)
+					newBoard->PrintBoard();
+
+				std::cout << "\nSnake Counter: " << newBoard->GetSnakeLengthCounter() << std::endl;
+
+				if (isSuccessMove == false)
+				{
+					std::cout << "\nGAME OVER " << std::endl;
+					break;
+				}
 			}
-		}
-		else
-		{
-			newBoard->PrintBoard();
-		}
+			else
+			{
+				newBoard->PrintBoard();
+			}
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		};
+		move = (char)_getche_nolock();
 	}
 	std::cout << "\n\nYou have ended the game.\n\n";
 };
