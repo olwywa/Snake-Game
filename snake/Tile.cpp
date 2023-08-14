@@ -27,20 +27,30 @@ std::pair<bool, bool> Tile::ChangeRoleToSnake()
 	this->SetSnakeAteFoodStatus(false);
 
 	// check collision with WALLS and SNAKE itself
-	if (this->oldRole == TileRoles::WALL || this->oldRole == TileRoles::SNAKE)
+	if (this->tileRole == TileRoles::WALL || this->tileRole == TileRoles::SNAKE)
 	{
 		std::cout << "Unavailable action, collision detected.\n";
 		result.first = false;
 	}
 	// check if SNAKE eat FOOD
-	else if (this->oldRole == TileRoles::FOOD)
+	else if (this->tileRole == TileRoles::FOOD)
 	{
+		this->oldRole = this->tileRole;
 		this->SetSnakeAteFoodStatus(true);
 		result.second = true;
+		result.first = true;
 	}
-	result.first = true;
-	this->tileRole = TileRoles::SNAKE;
-	return result;
+	else 
+	{
+		this->oldRole = this->tileRole;
+		result.first = true;
+	}
+
+	if (result.first)
+	{
+		this->tileRole = TileRoles::SNAKE;
+	}
+	 return result;
 }
 
 TileRoles Tile::GetRole() 

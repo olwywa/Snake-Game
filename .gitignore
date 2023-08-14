@@ -1,2 +1,5 @@
 snakeTest/.vs
 snake/.vs
+.vs
+snake/build/x64
+snakeTest/build/x64

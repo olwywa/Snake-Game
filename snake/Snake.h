@@ -1,6 +1,8 @@
 #pragma once
 #include <utility>
 #include <iostream>
+#include <vector>
+#include "Tile.h"
 
 enum HeadDirection {
 	UP = 0,
@@ -14,8 +16,9 @@ class Snake
 private:
 	std::pair<int, int> startSnakePos = std::make_pair(NULL, NULL);
 	std::pair<int, int> snakePos = {-1,-1};
-	int snakeLength = 0;
+	int snakeLength = 1;
 	HeadDirection snakeHeadDir = RIGHT; // default
+	std::vector<Tile*> tiles;
 
 public:
 	// starting position setters/getters
@@ -41,6 +44,12 @@ public:
 	void SetSnakeHeadDirection(HeadDirection dir);
 
 	int GetSnakeHeadDirection();
+
+	std::vector<Tile*> GetSnakeTile();
+
+	void AddToSnakeTile(Tile* tile);
+
+	void UpdateSnakeTile(Tile* tile);
 	//utworz snake
 	// idz w ktoras strone
 	// 

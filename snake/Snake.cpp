@@ -72,3 +72,35 @@ int Snake::GetSnakeHeadDirection()
 {
 	return int(this->snakeHeadDir);
 }
+
+std::vector<Tile*> Snake::GetSnakeTile() 
+{
+	return this->tiles;
+}
+
+void Snake::AddToSnakeTile(Tile* tile)
+{
+	if (tile != nullptr)
+	{
+		this->tiles.insert(this->tiles.begin(), tile);
+	}
+}
+
+void Snake::UpdateSnakeTile(Tile* tile)
+{
+	if (tile != nullptr)
+	{
+		if (this->snakeLength == 1) {
+			this->tiles.at(0) = tile;
+		}
+		if (this->tiles.back() != nullptr && this->snakeLength > 1)
+		{
+			this->tiles.back()->SetRole(EMPTY);
+			this->tiles.pop_back();
+
+			this->tiles.insert(tiles.begin(), tile);
+			int ff = 0;
+		}
+	}
+}
+

@@ -46,51 +46,6 @@ Board::Board()
 	}
 }
 
-//Board::Board() 
-//{
-//	InitializeGame();
-//
-//	for (int wiersz = 0; wiersz < boardSize; wiersz++)
-//	{
-//		std::vector<Tile*> vecTiles;
-//
-//		for (int kolumna = 0; kolumna < boardSize; kolumna++)
-//		{
-//			// write wall
-//			if (wiersz == 0 || wiersz == boardSize - 1)
-//			{
-//				Tile* singleTile = new Tile(2);
-//				vecTiles.push_back(singleTile);
-//			}
-//			// write wall
-//			else if (kolumna == 0 || kolumna == boardSize - 1)
-//			{
-//				Tile* singleTile = new Tile(2);
-//				vecTiles.push_back(singleTile);
-//			}
-//			// write snake with starting position
-//			else if ((wiersz == snake->GetStartingSnakeXPos())
-//				&& (kolumna == snake->GetStartingSnakeYPos()))
-//			{
-//				Tile* singleTile = new Tile(1);
-//				vecTiles.push_back(singleTile);
-//			}
-//			// write empty fields
-//			else
-//			{
-//				Tile* singleTile = new Tile(0);
-//				vecTiles.push_back(singleTile);
-//			}
-//			/*if (kolumna == boardSize - 1)
-//			{
-//				std::cout << "\n";
-//			}*/
-//		}
-//		board.push_back(vecTiles);
-//	}
-//	PrintBoard();
-//}
-
 void Board::InitializeGame() // random generate snake pos and food pos
 {
 	bool reqSnakeCheck = false;
@@ -108,6 +63,7 @@ void Board::InitializeGame() // random generate snake pos and food pos
 			this->board[tmpX][tmpY]->SetRole(1);
 			this->snake->SetStartingSnakePos(tmpX, tmpY);
 			this->snake->SetPosition(tmpX, tmpY);
+			this->snake->AddToSnakeTile(this->board[tmpX][tmpY]);
 		}
 	} while (!reqSnakeCheck);
 
@@ -169,17 +125,6 @@ bool Board::CheckStartingTilePosition(int x, int y)
 
 bool Board::IsCorrectMove(char moves)
 {
-	//if (snake->GetCurrentXPos() == -1 || snake->GetCurrentYPos() == -1)
-	//{
-	//	snake->SetCurrentXPos(snake->GetStartingSnakeXPos());
-	//	snake->SetCurrentYPos(snake->GetStartingSnakeYPos());
-
-	//}
-	//else if (snake->GetCurrentXPos() == NULL || snake->GetCurrentYPos() == NULL)
-	//{
-	//	snake->SetCurrentXPos(snake->GetStartingSnakeXPos());
-	//	snake->SetCurrentYPos(snake->GetStartingSnakeYPos());
-	//}
 	char tmp = toupper(moves);
 	switch (tmp)
 	{
@@ -221,14 +166,26 @@ bool Board::Moves(char moves)
 			try
 			{
 				result = board[snake->GetCurrentXPos() - 1][snake->GetCurrentYPos()]->ChangeRoleToSnake();
-				tempBool = result.first;
-				if (tempBool == false)
+				if (result.first == false)
 					break;
 				else
-					snake->SetPosition(snake->GetCurrentXPos() - 1, snake->GetCurrentYPos());
-				if (result.second)
-					this->snake->IncrementSnakeLenght();
-				this->isGoodMove = true;
+				{
+					if (result.second) // snake ate food
+					{
+						this->snake->IncrementSnakeLenght();
+						auto df = board[snake->GetCurrentXPos() - 1][snake->GetCurrentYPos()];
+						this->snake->AddToSnakeTile(board[snake->GetCurrentXPos() - 1][snake->GetCurrentYPos()]);
+						int ff = 0;
+						snake->SetPosition(snake->GetCurrentXPos() - 1, snake->GetCurrentYPos());
+					}
+					else // nie zjadl food
+					{
+						this->snake->UpdateSnakeTile(board[snake->GetCurrentXPos() - 1][snake->GetCurrentYPos()]);
+
+						snake->SetPosition(snake->GetCurrentXPos() - 1, snake->GetCurrentYPos());
+					}
+					this->isGoodMove = true;
+				}
 			}
 			catch (const std::exception&)
 			{
@@ -243,10 +200,23 @@ bool Board::Moves(char moves)
 				if (tempBool == false)
 					break;
 				else
-					snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() + 1);
-				if (result.second)
-					this->snake->IncrementSnakeLenght();
-				this->isGoodMove = true;
+				{
+					if (result.second) // snake ate food
+					{
+						this->snake->IncrementSnakeLenght();
+						auto df = board[snake->GetCurrentXPos()][snake->GetCurrentYPos() + 1];
+						this->snake->AddToSnakeTile(board[snake->GetCurrentXPos()][snake->GetCurrentYPos() + 1]);
+						int ff = 0;
+						snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() + 1);
+					}
+					else // nie zjadl food
+					{
+						this->snake->UpdateSnakeTile(board[snake->GetCurrentXPos()][snake->GetCurrentYPos() + 1]);
+
+						snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() + 1);
+					}
+					this->isGoodMove = true;
+				}
 			}
 			catch (const std::exception&)
 			{
@@ -261,10 +231,23 @@ bool Board::Moves(char moves)
 				if (tempBool == false)
 					break;
 				else
-					snake->SetPosition(snake->GetCurrentXPos() + 1, snake->GetCurrentYPos());
-				if (result.second)
-					this->snake->IncrementSnakeLenght();
-				this->isGoodMove = true;
+				{
+					if (result.second) // snake ate food
+					{
+						this->snake->IncrementSnakeLenght();
+						this->snake->AddToSnakeTile(board[snake->GetCurrentXPos() + 1][snake->GetCurrentYPos()]);
+						int ff = 0;
+						snake->SetPosition(snake->GetCurrentXPos() + 1, snake->GetCurrentYPos());
+					}
+					else // nie zjadl food
+					{
+						this->snake->UpdateSnakeTile(board[snake->GetCurrentXPos() + 1][snake->GetCurrentYPos()]);
+
+						snake->SetPosition(snake->GetCurrentXPos() + 1, snake->GetCurrentYPos());
+
+					}
+					this->isGoodMove = true;
+				}
 			}
 			catch (const std::exception&)
 			{
@@ -279,10 +262,22 @@ bool Board::Moves(char moves)
 				if (tempBool == false)
 					break;
 				else
-					snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() - 1);
-				if (result.second)
+				{
+				if (result.second) // snake ate food
+				{
 					this->snake->IncrementSnakeLenght();
+					auto df = board[snake->GetCurrentXPos()][snake->GetCurrentYPos() - 1];
+					this->snake->AddToSnakeTile(board[snake->GetCurrentXPos()][snake->GetCurrentYPos() - 1]);
+					int ff = 0;
+					snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() - 1);
+				}
+				else // nie zjadl food
+				{
+					this->snake->UpdateSnakeTile(board[snake->GetCurrentXPos()][snake->GetCurrentYPos() - 1]);
+					snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() - 1);
+				}
 				this->isGoodMove = true;
+				}
 			}
 			catch (const std::exception&)
 			{
@@ -302,10 +297,20 @@ bool Board::Moves(char moves)
 					std::pair<int, int> tempCoords = { this->snake->GetCurrentXPos(),this->snake->GetCurrentYPos() };
 					std::pair<int, int> currColRow = { wiersz, kolumna };
 
-					if (currColRow != tempCoords &&
-						board[wiersz][kolumna]->GetRole() == SNAKE)
+					if (this->snake->GetSnakeLength() >= 2
+						&& this->board[wiersz][kolumna]->GetRole() == SNAKE
+						&& ( this->board[wiersz][kolumna]->GetOldRole() == FOOD
+						|| this->board[wiersz][kolumna]->GetOldRole() == EMPTY))
 					{
-						board[wiersz][kolumna]->ClearTile();
+						// not clear
+					}
+					else 
+					{
+						if (currColRow != tempCoords &&
+							board[wiersz][kolumna]->GetRole() == SNAKE)
+						{
+							board[wiersz][kolumna]->ClearTile();
+						}
 					}
 				}
 			}
@@ -313,118 +318,6 @@ bool Board::Moves(char moves)
 		return true;
 	}
 }
-
-//void Board::Moves(char moves) 
-//{
-//	char tempMove = toupper(moves);
-//
-//	if (snake->GetCurrentXPos() == -1 || snake->GetCurrentYPos() == -1)
-//	{
-//		snake->SetCurrentXPos(snake->GetStartingSnakeXPos());
-//		snake->SetCurrentYPos(snake->GetStartingSnakeYPos());
-//
-//		if (snake->GetStartingSnakeXPos() != NULL || snake->GetStartingSnakeYPos() != NULL)
-//		{
-//			snake->SetStartingSnakePos(NULL, NULL);
-//		}
-//	}
-//	else if (snake->GetCurrentXPos() == NULL || snake->GetCurrentYPos() == NULL)
-//	{
-//		snake->SetCurrentXPos(snake->GetStartingSnakeXPos());
-//		snake->SetCurrentYPos(snake->GetStartingSnakeYPos());
-//	}
-//
-//	//if (snake->GetStartingSnakeXPos() != NULL || snake->GetStartingSnakeYPos() != NULL)
-//	//{
-//	//	snake->SetStartingSnakePos(NULL, NULL);
-//	//}
-//
-//	switch (tempMove)
-//	{
-//	case 87: // W
-//		try
-//		{
-//			bool succesRole = board[snake->GetCurrentXPos() - 1][snake->GetCurrentYPos()]->SetRole(1);
-//			if (succesRole == false)
-//				break;
-//			else
-//				snake->SetPosition(snake->GetCurrentXPos()-1, snake->GetCurrentYPos());
-//		}
-//		catch (const std::exception&)
-//		{
-//			std::cout << "Not possible";
-//		}
-//		this->isGoodMove = true;
-//		break;
-//	case 68: // D
-//		try
-//		{
-//			snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() +1);
-//			int f = 0;
-//		}
-//		catch (const std::exception&)
-//		{
-//			std::cout << "Not possible";
-//		}
-//		this->isGoodMove = true;
-//		break;
-//	case 83: // S
-//		try
-//		{
-//			snake->SetPosition(snake->GetCurrentXPos() +1, snake->GetCurrentYPos());
-//			int f = 0;
-//		}
-//		catch (const std::exception&)
-//		{
-//			std::cout << "Not possible";
-//		}
-//		this->isGoodMove = true;
-//		break;
-//	case 65: // A
-//		try
-//		{
-//			snake->SetPosition(snake->GetCurrentXPos(), snake->GetCurrentYPos() -1);
-//			int f = 0;
-//		}
-//		catch (const std::exception&)
-//		{
-//			std::cout << "Not possible";
-//		}
-//		this->isGoodMove = true;
-//		break;
-//	default:
-//		this->isGoodMove = false;
-//		break;
-//	}
-//
-//	std::pair<int, int> newSnakePos = snake->GetPosition();
-//	bool succesRole = false;
-//
-//	for (int wiersz = 0; wiersz < boardSize; wiersz++)
-//	{
-//		for (int kolumna = 0; kolumna < boardSize; kolumna++)
-//		{
-//			if (board[wiersz][kolumna] != nullptr)
-//			{
-//				if (wiersz == newSnakePos.first && kolumna == newSnakePos.second)
-//				{
-//					succesRole = board[wiersz][kolumna]->SetRole(1);
-//					if (succesRole == false)
-//						break;
-//				}
-//
-//				std::pair<int, int> tempCoords = { this->snake->GetCurrentXPos(),this->snake->GetCurrentYPos() };
-//				std::pair<int, int> currColRow = { wiersz, kolumna };
-//
-//				if ( currColRow != tempCoords &&
-//					board[wiersz][kolumna]->GetRole() == SNAKE && succesRole)
-//				{
-//					board[wiersz][kolumna]->ClearTile();
-//				}
-//			}
-//		}
-//	}
-//}
 
 void Board::PrintBoard()
 {
