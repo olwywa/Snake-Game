@@ -1,7 +1,4 @@
 #include "Board.h"
-#include "Tile.h"
-#include <vector>
-#include <utility>
 
 Board::Board()
 {
@@ -12,41 +9,35 @@ Board::Board()
 
 	if (correctSize)
 	{
-		// generate empty board
-		for (int wiersz = 0; wiersz < this->boardSize; wiersz++)
+		for (int wiersz = 0; wiersz < this->boardSize; wiersz++)			// generate empty board to initialize it later
 		{
 			std::vector<Tile*> vecTiles;
 
 			for (int kolumna = 0; kolumna < this->boardSize; kolumna++)
 			{
-				// write wall
-				if (wiersz == 0 || wiersz == this->boardSize - 1)
+				if (wiersz == 0 || wiersz == this->boardSize - 1)			// write wall
 				{
 					Tile* singleTile = new Tile(2);
 					vecTiles.push_back(singleTile);
 				}
-				// write wall
-				else if (kolumna == 0 || kolumna == this->boardSize - 1)
+				else if (kolumna == 0 || kolumna == this->boardSize - 1)	// write wall
 				{
 					Tile* singleTile = new Tile(2);
 					vecTiles.push_back(singleTile);
 				}
-				// write empty fields
-				else
+				else														// write empty fields
 				{
 					Tile* singleTile = new Tile(0);
 					vecTiles.push_back(singleTile);
 				}
 			}
-			board.push_back(vecTiles);
+			this->board.push_back(vecTiles);
 		}
-
-		// generate snake and food position
-		InitializeGame();
+		InitializeGame();													// generate snake and food position
 	}
 }
 
-void Board::InitializeGame() // random generate snake pos and food pos
+void Board::InitializeGame()												// randomly generate snake pos and food pos
 {
 	bool reqSnakeCheck = false;
 	int tmpX;
@@ -55,8 +46,8 @@ void Board::InitializeGame() // random generate snake pos and food pos
 	do {
 		tmpX = GenerateRandomNumberInRange(0, this->boardSize-1);
 		tmpY = GenerateRandomNumberInRange(0, this->boardSize-1);
-		reqSnakeCheck = CheckTileRoleAtPosition(tmpX, tmpY); // check if random values are correct
-		if (reqSnakeCheck)
+		reqSnakeCheck = CheckTileRoleAtPosition(tmpX, tmpY);	
+		if (reqSnakeCheck)													// check if random values are correct
 		{
 			this->board[tmpX][tmpY]->SetRole(1);
 			this->snake->SetStartingSnakePos(tmpX, tmpY);
@@ -77,9 +68,8 @@ bool Board::SetBoardSize(int x)
 		this->boardSize = x;
 		return true;
 	}
-	else 
+	else  //invalid size
 	{
-		//invalid size
 		std::cout << "This board size is incorrect, it must be a value equal or greater than 5 to play." << std::endl;
 		return false;
 	}
@@ -104,7 +94,7 @@ void Board::GenerateFood()
 	do {
 		tmpX = GenerateRandomNumberInRange(0, this->boardSize - 1);
 		tmpY = GenerateRandomNumberInRange(0, this->boardSize - 1);
-		reqFoodCheck = CheckTileRoleAtPosition(tmpX, tmpY); // check if random values are correct
+		reqFoodCheck = CheckTileRoleAtPosition(tmpX, tmpY);				// check if random values are correct
 		if (reqFoodCheck)
 		{
 			this->board[tmpX][tmpY]->SetRole(3);
@@ -114,8 +104,7 @@ void Board::GenerateFood()
 
 bool Board::CheckTileRoleAtPosition(int x, int y)
 {
-	// check if tile role at position is ok (is empty)
-	if (this->board[x][y]->GetRole() == EMPTY)
+	if (this->board[x][y]->GetRole() == EMPTY)							// check if tile role at position is ok (is empty)
 	{
 		return true;
 	}
@@ -181,7 +170,6 @@ bool Board::Move(char move)
 				{
 					if (result.second)					// Snake ate food - add new tile to Snake's body
 					{
-						//this->snake->IncrementSnakeLength();
 						this->snake->AddToSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
 						this->snake->SetPosition(tmpSnakeCoords);
 						GenerateFood();
@@ -314,7 +302,7 @@ bool Board::Move(char move)
 							&& (this->board[row][col]->GetOldRole() == FOOD
 								|| this->board[row][col]->GetOldRole() == EMPTY))
 						{
-							// not clear
+							// dont clear
 						}
 						else
 						{

@@ -41,11 +41,6 @@ void Snake::SetCurrentYPos(int y)
 	this->currSnakePos.second = y;
 }
 
-//void Snake::IncrementSnakeLength()
-//{
-//	this->snakeLength += 1;
-//}
-
 int Snake::GetSnakeLength() 
 {
 	return this->snakeLength;

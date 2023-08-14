@@ -1,6 +1,4 @@
 #pragma once
-#include <utility>
-#include <iostream>
 #include <vector>
 #include "Tile.h"
 
@@ -25,6 +23,7 @@ public:
 
 	//~Snake();															// Destructor
 
+	// ****** START Snake Position - setters and getters ********
 	void SetStartingSnakePos(int x, int y);
 
 	std::pair<int, int> GetStartingSnakePos();
@@ -34,12 +33,13 @@ public:
 	std::pair<int, int> GetPosition();
 
 	void SetCurrentXPos(int x);
+
 	void SetCurrentYPos(int y);
 
 	int GetCurrentXPos();
-	int GetCurrentYPos();
 
-	void IncrementSnakeLength();
+	int GetCurrentYPos();
+	// ****** END Snake Position - setters and getters ********
 
 	int GetSnakeLength();
 
