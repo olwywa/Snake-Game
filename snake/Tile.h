@@ -11,10 +11,9 @@ enum TileRoles
 
 class Tile
 {
-	TileRoles tileRole;
-	TileRoles oldRole;
-	int tileCharacter;
-	bool ateFoodStatus = false;
+private:
+	TileRoles currTileRole;					// current Tile role
+	TileRoles oldRole;						// previous Tile role
 
 public:
 	Tile(int role)
@@ -23,19 +22,16 @@ public:
 		this->oldRole = static_cast<TileRoles>(role);
 	};
 
-	void SetRole(int role);
+	~Tile();
 
-	std::pair<bool, bool> ChangeRoleToSnake();// first - if success, second - if ate food
+	void SetRole(int role);
 
 	TileRoles GetRole();
 
 	TileRoles GetOldRole();
 
+	std::pair<bool, bool> ChangeRoleToSnake();	// first bool - if succeed changing role, second - if ate food
+
 	void ClearTile();
-
-	void SetSnakeAteFoodStatus(bool ateOrNot);
-
-	bool GetSnakeAteFoodStatus();
-	//void DrawTile(TileRoles role) {};
 };
 

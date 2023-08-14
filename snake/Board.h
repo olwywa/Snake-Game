@@ -7,32 +7,34 @@ class Board
 {
 private:
 	int boardSize = 0;
-
-public:
+	bool isGoodMove = false;
 	std::vector <std::vector<Tile*>> board;
-	bool isGoodMove = true;
-	bool wantToPlay = true;
-
-	// constructor
-	Board();
-
 	Snake* snake = new Snake();
 
+public:
+	// constructor
+	Board();
+	// destructor
+	~Board();
+
 	bool SetBoardSize(int x);
+
 	int GetBoardSize();
 
 	void InitializeGame();
 
 	int GenerateRandomNumberInRange(int min, int max);
 
-	bool CheckStartingTilePosition(int x, int y);
+	void GenerateFood();
 
-	bool Moves(char moves);
+	bool CheckTileRoleAtPosition(int x, int y);
+
+	int GetSnakeLengthCounter();
+
+	bool IsCorrectKeyMove(char move);
+
+	bool Move(char move);
+
 	void PrintBoard();
-	bool IsCorrectMove(char moves);
-	bool isOver();
-	// utworz plansze
-	// clear plansze
-	// check ruch usera z rodzajem tile
 };
 

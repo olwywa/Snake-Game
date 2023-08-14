@@ -1,61 +1,27 @@
 #include "Tile.h"
 
-
 void Tile::SetRole(int role) 
 {
 	switch (role)
 	{
 	case 0:
-		tileRole = TileRoles::EMPTY;
+		this->currTileRole = TileRoles::EMPTY;
 		break;
 	case 1:
-		tileRole = TileRoles::SNAKE;
+		this->currTileRole = TileRoles::SNAKE;
 		break;
 	case 2:
-		tileRole = TileRoles::WALL;
+		this->currTileRole = TileRoles::WALL;
 		break;
 	case 3:
-		tileRole = TileRoles::FOOD;
+		this->currTileRole = TileRoles::FOOD;
 		break;
 	}
 }
 
-std::pair<bool, bool> Tile::ChangeRoleToSnake()
+TileRoles Tile::GetRole()
 {
-	std::pair<bool, bool> result = {false, false};
-	// clear Snake Ate Food Status each time
-	this->SetSnakeAteFoodStatus(false);
-
-	// check collision with WALLS and SNAKE itself
-	if (this->tileRole == TileRoles::WALL || this->tileRole == TileRoles::SNAKE)
-	{
-		std::cout << "Unavailable action, collision detected.\n";
-		result.first = false;
-	}
-	// check if SNAKE eat FOOD
-	else if (this->tileRole == TileRoles::FOOD)
-	{
-		this->oldRole = this->tileRole;
-		this->SetSnakeAteFoodStatus(true);
-		result.second = true;
-		result.first = true;
-	}
-	else 
-	{
-		this->oldRole = this->tileRole;
-		result.first = true;
-	}
-
-	if (result.first)
-	{
-		this->tileRole = TileRoles::SNAKE;
-	}
-	 return result;
-}
-
-TileRoles Tile::GetRole() 
-{
-	return this->tileRole;
+	return this->currTileRole;
 }
 
 TileRoles Tile::GetOldRole()
@@ -63,17 +29,34 @@ TileRoles Tile::GetOldRole()
 	return this->oldRole;
 }
 
+std::pair<bool, bool> Tile::ChangeRoleToSnake()
+{
+	std::pair<bool, bool> result = {true, false};				// {move was successful, Snake ate food status}
+	
+	if (this->currTileRole == TileRoles::WALL 
+		|| this->currTileRole == TileRoles::SNAKE)				// check collision with WALLS and SNAKE itself
+	{
+		std::cout << "Collision detected!!!\n\n";
+		result.first = false;
+	}
+	else if (this->currTileRole == TileRoles::FOOD)				// check if Snake ate FOOD
+	{
+		this->oldRole = this->currTileRole;
+		result.second = true;
+	}
+	else 
+	{
+		this->oldRole = this->currTileRole;
+	}
+
+	if (result.first)											// if Snake's move was successful, update current tile role
+	{
+		this->currTileRole = TileRoles::SNAKE;
+	}
+	 return result;
+}
+
 void Tile::ClearTile() 
 {
 	this->SetRole(TileRoles::EMPTY);
-}
-
-void Tile::SetSnakeAteFoodStatus(bool ateOrNot)
-{
-	this->ateFoodStatus = ateOrNot;
-}
-
-bool Tile::GetSnakeAteFoodStatus() 
-{
-	return this->ateFoodStatus;
 }

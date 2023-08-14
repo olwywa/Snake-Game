@@ -1,62 +1,50 @@
 #include "Snake.h"
 
-void Snake::SetPosition(int x, int y) 
-{
-	snakePos = std::make_pair(x,y);
-}
-
-std::pair<int, int> Snake::GetPosition()
-{
-	return snakePos;
-}
-
-std::pair<int, int> Snake::GetStartingSnakePos()
-{
-	return startSnakePos;
-}
-
-void Snake::SetStartingSnakePos(int x, int y)
+void Snake::SetStartingSnakePos(int x, int y)		// Set coordinates of Snake's starting position
 {
 	this->startSnakePos = { x, y };
+	this->currSnakePos = startSnakePos;
 }
 
-int Snake::GetStartingSnakeXPos()
+std::pair<int, int> Snake::GetStartingSnakePos()	// Get coordinates of Snake's starting position
 {
-	if (this->startSnakePos.first != NULL)
-		return startSnakePos.first;
+	return this->startSnakePos;
 }
 
-int Snake::GetStartingSnakeYPos()
+void Snake::SetPosition(std::pair<int, int> coords)				// Set current Snake's position
 {
-	//return startSnakePos.second;
-	if (this->startSnakePos.first != NULL)
-		return startSnakePos.second;
+	this->currSnakePos = coords;
+}
+
+std::pair<int, int> Snake::GetPosition()			// Get current Snake's position
+{
+	return this->currSnakePos;
 }
 
 int Snake::GetCurrentXPos()
 {
-	return snakePos.first;
+	return this->currSnakePos.first;
 }
 
 int Snake::GetCurrentYPos()
 {
-	return snakePos.second;
+	return this->currSnakePos.second;
 }
 
 void Snake::SetCurrentXPos(int x)
 {
-	snakePos.first = x;
+	this->currSnakePos.first = x;
 }
 
 void Snake::SetCurrentYPos(int y)
 {
-	snakePos.second = y;
+	this->currSnakePos.second = y;
 }
 
-void Snake::IncrementSnakeLenght() 
-{
-	this->snakeLength += 1;
-}
+//void Snake::IncrementSnakeLength()
+//{
+//	this->snakeLength += 1;
+//}
 
 int Snake::GetSnakeLength() 
 {
@@ -73,33 +61,39 @@ int Snake::GetSnakeHeadDirection()
 	return int(this->snakeHeadDir);
 }
 
-std::vector<Tile*> Snake::GetSnakeTile() 
+std::vector<Tile*> Snake::GetSnakeBody() 
 {
-	return this->tiles;
-}
-
-void Snake::AddToSnakeTile(Tile* tile)
-{
-	if (tile != nullptr)
+	if (!this->body.empty())
+		return this->body;
+	else
 	{
-		this->tiles.insert(this->tiles.begin(), tile);
+		// nothing
 	}
 }
 
-void Snake::UpdateSnakeTile(Tile* tile)
+void Snake::AddToSnakeBody(Tile* tile)					// Add new tile to Snake's body after eating food
 {
 	if (tile != nullptr)
 	{
-		if (this->snakeLength == 1) {
-			this->tiles.at(0) = tile;
-		}
-		if (this->tiles.back() != nullptr && this->snakeLength > 1)
-		{
-			this->tiles.back()->SetRole(EMPTY);
-			this->tiles.pop_back();
+		this->snakeLength += 1;
+		this->body.insert(this->body.begin(), tile);	// Add this element to the front of the vector
+	}
+}
 
-			this->tiles.insert(tiles.begin(), tile);
-			int ff = 0;
+void Snake::UpdateSnakeBody(Tile* tile)					// Update Snake's body after moving to new position
+{
+	if (tile != nullptr)
+	{
+		if (this->snakeLength == 1)						// if Snake is 1 tile long, just update the position of the element
+		{
+			this->body.at(0) = tile;
+		}
+		else if(this->body.back() != nullptr
+			&& this->snakeLength > 1)					// clear previous tile after move, update the position of the current element
+		{
+			this->body.back()->SetRole(EMPTY);
+			this->body.pop_back();
+			this->body.insert(body.begin(), tile);
 		}
 	}
 }

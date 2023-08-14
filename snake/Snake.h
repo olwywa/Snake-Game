@@ -14,30 +14,32 @@ enum HeadDirection {
 class Snake
 {
 private:
-	std::pair<int, int> startSnakePos = std::make_pair(NULL, NULL);
-	std::pair<int, int> snakePos = {-1,-1};
+	std::pair<int, int> startSnakePos = std::make_pair(NULL, NULL);		// starting Snake position
+	std::pair<int, int> currSnakePos = {NULL, NULL};					// current Snake position
 	int snakeLength = 1;
-	HeadDirection snakeHeadDir = RIGHT; // default
-	std::vector<Tile*> tiles;
+	HeadDirection snakeHeadDir = RIGHT;									// default Snake's head direction
+	std::vector<Tile*> body;											// Snake's body
 
 public:
-	// starting position setters/getters
-	std::pair<int, int> GetStartingSnakePos();
+	Snake() {}															// Constructor
+
+	//~Snake();															// Destructor
+
 	void SetStartingSnakePos(int x, int y);
 
-	int GetStartingSnakeXPos();
-	int GetStartingSnakeYPos();
+	std::pair<int, int> GetStartingSnakePos();
 
-	int GetCurrentXPos();
-	int GetCurrentYPos();
+	void SetPosition(std::pair<int,int> coords);
+
+	std::pair<int, int> GetPosition();
 
 	void SetCurrentXPos(int x);
 	void SetCurrentYPos(int y);
 
-	void SetPosition(int x, int y);
-	std::pair<int, int> GetPosition();
+	int GetCurrentXPos();
+	int GetCurrentYPos();
 
-	void IncrementSnakeLenght();
+	void IncrementSnakeLength();
 
 	int GetSnakeLength();
 
@@ -45,13 +47,10 @@ public:
 
 	int GetSnakeHeadDirection();
 
-	std::vector<Tile*> GetSnakeTile();
+	std::vector<Tile*> GetSnakeBody();
 
-	void AddToSnakeTile(Tile* tile);
+	void AddToSnakeBody(Tile* tile);
 
-	void UpdateSnakeTile(Tile* tile);
-	//utworz snake
-	// idz w ktoras strone
-	// 
+	void UpdateSnakeBody(Tile* tile);
 };
 
