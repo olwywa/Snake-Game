@@ -25,7 +25,7 @@ public:
 
 	int GenerateRandomNumberInRange(int min, int max);
 
-	void GenerateFood();
+	void GenerateTileRole(TileRoles role);
 
 	bool CheckTileRoleAtPosition(int x, int y);
 
@@ -34,6 +34,8 @@ public:
 	bool IsCorrectKeyMove(char move);
 
 	bool Move(char move);
+
+	void MakeMoveWithDirection(int x, int y);
 
 	void PrintBoard();
 

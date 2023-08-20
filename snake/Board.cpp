@@ -39,23 +39,9 @@ Board::Board()
 
 void Board::InitializeGame()												// randomly generate snake pos and food pos
 {
-	bool reqSnakeCheck = false;
-	int tmpX;
-	int tmpY;
+	this->GenerateTileRole(SNAKE);
 
-	do {
-		tmpX = GenerateRandomNumberInRange(0, this->boardSize-1);
-		tmpY = GenerateRandomNumberInRange(0, this->boardSize-1);
-		reqSnakeCheck = CheckTileRoleAtPosition(tmpX, tmpY);	
-		if (reqSnakeCheck)													// check if random values are correct
-		{
-			this->board[tmpX][tmpY]->SetRole(1);
-			this->snake->SetStartingSnakePos(tmpX, tmpY);
-			this->snake->AddToSnakeBody(this->board[tmpX][tmpY]);
-		}
-	} while (!reqSnakeCheck);
-
-	GenerateFood();
+	this->GenerateTileRole(FOOD);
 
 	std::cout << "\nThis is your starting board and position:\n\n";
 	PrintBoard();
@@ -85,21 +71,26 @@ int Board::GenerateRandomNumberInRange(int min, int max)
 	return (min + (rand() % static_cast<int>(max - min + 1)));
 }
 
-void Board::GenerateFood() 
+void Board::GenerateTileRole(TileRoles role)
 {
 	int tmpX;
-	int tmpY;	
-	bool reqFoodCheck = false;
+	int tmpY;
+	bool reqCheck = false;
 
 	do {
 		tmpX = GenerateRandomNumberInRange(0, this->boardSize - 1);
 		tmpY = GenerateRandomNumberInRange(0, this->boardSize - 1);
-		reqFoodCheck = CheckTileRoleAtPosition(tmpX, tmpY);				// check if random values are correct
-		if (reqFoodCheck)
+		reqCheck = CheckTileRoleAtPosition(tmpX, tmpY);				// check if random values are correct
+		if (reqCheck)
 		{
-			this->board[tmpX][tmpY]->SetRole(3);
+			this->board[tmpX][tmpY]->SetRole(role);
+			if (role == SNAKE) 
+			{
+				this->snake->SetStartingSnakePos(tmpX, tmpY);
+				this->snake->AddToSnakeBody(this->board[tmpX][tmpY]);
+			}
 		}
-	} while (!reqFoodCheck);
+	} while (!reqCheck);
 }
 
 bool Board::CheckTileRoleAtPosition(int x, int y)
@@ -158,30 +149,7 @@ bool Board::Move(char move)
 		case HeadDirection::UP:
 			try
 			{
-				tmpSnakeCoords = { this->snake->GetCurrentXPos() - 1, this->snake->GetCurrentYPos() };
-				result = this->board[tmpSnakeCoords.first][tmpSnakeCoords.second]->ChangeRoleToSnake();
-
-				if (result.first == false)				// check if move is possible
-				{
-					this->isGoodMove = false;
-					this->isGameOver = true;
-					break;
-				}
-				else									// check is Snake ate food
-				{
-					if (result.second)					// Snake ate food - add new tile to Snake's body
-					{
-						this->snake->AddToSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-						GenerateFood();
-					}
-					else								// did not eat - just update Snake's body
-					{
-						this->snake->UpdateSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-					}
-					this->isGoodMove = true;
-				}
+				this->MakeMoveWithDirection(1, 0);
 			}
 			catch (const std::exception&)
 			{
@@ -191,30 +159,8 @@ bool Board::Move(char move)
 		case HeadDirection::RIGHT:
 			try
 			{
-				tmpSnakeCoords = { this->snake->GetCurrentXPos(), this->snake->GetCurrentYPos() + 1 };
-				result = this->board[tmpSnakeCoords.first][tmpSnakeCoords.second]->ChangeRoleToSnake();
+				this->MakeMoveWithDirection(0, -1);
 
-				if (result.first == false)				// check if move is possible
-				{
-					this->isGoodMove = false;
-					this->isGameOver = true;
-					break;
-				}
-				else									// check is Snake ate food
-				{
-					if (result.second) 
-					{
-						this->snake->AddToSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-						GenerateFood();
-					}
-					else
-					{
-						this->snake->UpdateSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-					}
-					this->isGoodMove = true;
-				}
 			}
 			catch (const std::exception&)
 			{
@@ -224,30 +170,7 @@ bool Board::Move(char move)
 		case HeadDirection::DOWN:
 			try
 			{
-				tmpSnakeCoords = { this->snake->GetCurrentXPos() + 1, this->snake->GetCurrentYPos() };
-				result = this->board[tmpSnakeCoords.first][tmpSnakeCoords.second]->ChangeRoleToSnake();
-
-				if (result.first == false)				// check if move is possible
-				{
-					this->isGoodMove = false;
-					this->isGameOver = true;
-					break;
-				}
-				else									// check is Snake ate food
-				{
-					if (result.second)
-					{
-						this->snake->AddToSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-						GenerateFood();
-					}
-					else
-					{
-						this->snake->UpdateSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-					}
-					this->isGoodMove = true;
-				}
+				this->MakeMoveWithDirection(-1, 0);
 			}
 			catch (const std::exception&)
 			{
@@ -257,30 +180,7 @@ bool Board::Move(char move)
 		case HeadDirection::LEFT:
 			try
 			{
-				tmpSnakeCoords = { this->snake->GetCurrentXPos(), this->snake->GetCurrentYPos() - 1 };
-				result = this->board[tmpSnakeCoords.first][tmpSnakeCoords.second]->ChangeRoleToSnake();
-
-				if (result.first == false)				// check if move is possible
-				{
-					this->isGoodMove = false;
-					this->isGameOver = true;
-					break;
-				}
-				else									// check is Snake ate food
-				{
-					if (result.second) 
-					{
-						this->snake->AddToSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-						GenerateFood();
-					}
-					else 
-					{
-						this->snake->UpdateSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
-						this->snake->SetPosition(tmpSnakeCoords);
-					}
-					this->isGoodMove = true;
-				}
+				this->MakeMoveWithDirection(0, 1);
 			}
 			catch (const std::exception&)
 			{
@@ -324,6 +224,35 @@ bool Board::Move(char move)
 	return this->isGoodMove;
 }
 
+void Board::MakeMoveWithDirection(int x, int y) 
+{
+	std::pair<bool, bool> result;
+
+	std::pair<int, int> tmpSnakeCoords = { this->snake->GetCurrentXPos() - x, this->snake->GetCurrentYPos() - y };
+	result = this->board[tmpSnakeCoords.first][tmpSnakeCoords.second]->ChangeRoleToSnake();
+
+	if (result.first == false)				// check if move is possible
+	{
+		this->isGoodMove = false;
+		this->isGameOver = true;
+	}
+	else									// check is Snake ate food
+	{
+		if (result.second)					// Snake ate food - add new tile to Snake's body
+		{
+			this->snake->AddToSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
+			this->snake->SetPosition(tmpSnakeCoords);
+			this->GenerateTileRole(FOOD);
+		}
+		else								// did not eat - just update Snake's body
+		{
+			this->snake->UpdateSnakeBody(board[tmpSnakeCoords.first][tmpSnakeCoords.second]);
+			this->snake->SetPosition(tmpSnakeCoords);
+		}
+		this->isGoodMove = true;
+	}
+}
+
 void Board::PrintBoard()
 {
 	for (int row = 0; row < this->boardSize; row++)
@@ -360,5 +289,28 @@ bool Board::GetGameState()
 
 Board::~Board() 
 {
-	//delete this->snake;
+	for (int row = 0; row < this->boardSize; row++)			// generate empty board to initialize it later
+	{
+		std::vector<Tile*> vecTiles;
+
+		for (int col = 0; col < this->boardSize; col++)
+		{
+			if (row == 0 || row == this->boardSize - 1)			// write wall
+			{
+				Tile* singleTile = new Tile(2);
+				vecTiles.push_back(singleTile);
+			}
+			else if (col == 0 || col == this->boardSize - 1)	// write wall
+			{
+				Tile* singleTile = new Tile(2);
+				vecTiles.push_back(singleTile);
+			}
+			else														// write empty fields
+			{
+				Tile* singleTile = new Tile(0);
+				vecTiles.push_back(singleTile);
+			}
+		}
+		this->board.push_back(vecTiles);
+	}
 }
