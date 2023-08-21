@@ -70,7 +70,10 @@ void Snake::AddToSnakeBody(Tile* tile)					// Add new tile to Snake's body after
 {
 	if (tile != nullptr)
 	{
-		this->snakeLength += 1;
+		if (tile->GetOldRole() == FOOD ) 
+		{
+			this->snakeLength += 1;
+		}
 		this->body.insert(this->body.begin(), tile);	// Add this element to the front of the vector
 	}
 }
